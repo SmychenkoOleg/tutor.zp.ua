@@ -25,41 +25,53 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "invalid email" }, { status: 400 });
     }
 
-    const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
-    const telegramChat = process.env.TELEGRAM_CHAT_ID;
-    const text = [
-      "Нова заявка з сайту репетитора",
-      `Мета: ${intent}`,
-      `Ім’я: ${name}`,
-      `Телефон: ${phone}`,
-      `E-mail: ${email}`,
-    ].join("\n");
+    const telegramToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
+    const telegramChat = process.env.TELEGRAM_CHAT_ID?.trim();
 
-    const deliveries: Promise<Response>[] = [];
-    if (telegramToken && telegramChat) {
-      deliveries.push(fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: telegramChat, text }),
-      }));
+    if (!telegramToken || !telegramChat) {
+      console.error("Telegram delivery is not configured");
+      return NextResponse.json(
+        { error: "telegram_not_configured" },
+        { status: 503 },
+      );
     }
 
-    deliveries.push(fetch("https://formsubmit.co/ajax/repetytor.in.zp@gmail.com", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        name, phone, email,
-        message: intent,
-        _subject: "Нова заявка: репетитор з математики",
-        _template: "table",
-      }),
-    }));
+    const text = [
+      "🔔 Нова заявка з сайту репетитора",
+      "",
+      `🎯 Мета: ${intent}`,
+      `👤 Ім’я: ${name}`,
+      `📞 Телефон: ${phone}`,
+      `✉️ E-mail: ${email}`,
+    ].join("\n");
 
-    const results = await Promise.allSettled(deliveries);
-    const delivered = results.some((result) => result.status === "fulfilled" && result.value.ok);
-    if (!delivered) return NextResponse.json({ error: "delivery failed" }, { status: 502 });
+    const telegramResponse = await fetch(
+      `https://api.telegram.org/bot${telegramToken}/sendMessage`,
+      {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: telegramChat,
+        text,
+        disable_web_page_preview: true,
+      }),
+      },
+    );
+
+    if (!telegramResponse.ok) {
+      const telegramError = await telegramResponse.text();
+      console.error(
+        `Telegram delivery failed with status ${telegramResponse.status}: ${telegramError}`,
+      );
+      return NextResponse.json(
+        { error: "telegram_delivery_failed" },
+        { status: 502 },
+      );
+    }
+
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (error) {
+    console.error("Lead request failed", error);
     return NextResponse.json({ error: "bad request" }, { status: 400 });
   }
 }
