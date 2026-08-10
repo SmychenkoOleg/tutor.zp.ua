@@ -54,16 +54,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         {children}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-CGJN7GB3B5"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-CGJN7GB3B5');`}
-        </Script>
       </body>
     </html>
   );
