@@ -14,10 +14,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Репетитор з математики 5–12 класи | Підготовка до НМТ 2026",
-  description: "Індивідуальні заняття з математики для 5–12 класів та системна підготовка до НМТ 2026. Понад 10 років досвіду.",
-  other: {
-    "codex-preview": "development",
+  metadataBase: new URL("https://tutor.zp.ua"),
+  title: "Зрозуміти математику | Репетитор з математики онлайн",
+  description:
+    "Зрозуміти математику й повірити у свої сили — онлайн разом із професійним репетитором. Індивідуальні заняття для 5–12 класів і підготовка до НМТ.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "uk_UA",
+    url: "/",
+    siteName: "MathLab",
+    title: "Зрозуміти математику. Повірити у свої сили.",
+    description:
+      "Онлайн-заняття з професійним репетитором з математики для учнів 5–12 класів і підготовки до НМТ.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Зрозуміти математику. Повірити у свої сили.",
+    description:
+      "Онлайн-заняття з професійним репетитором з математики для учнів 5–12 класів і підготовки до НМТ.",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   icons: {
     icon: "/favicon.svg",

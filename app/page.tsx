@@ -159,7 +159,7 @@ export default function Home() {
           </div>
           <div className="hero-visual">
             <div className="image-card">
-              <img src="/images/hero-math.png" alt="Учень впевнено працює над математичним завданням" width="900" height="760" fetchPriority="high" />
+              <img src="/images/hero-math.png" alt="Онлайн-заняття з репетитором з математики для учнів 5–12 класів" width="900" height="760" fetchPriority="high" />
             </div>
             <div className="float-card float-top"><Icon>✓</Icon><span><strong>Чіткий план</strong> до результату</span></div>
             <div className="float-card float-bottom"><strong>НМТ 2026</strong><span>Підготовка без стресу</span></div>
@@ -196,7 +196,7 @@ export default function Home() {
 
         <section id="approach" className="section split-section">
           <div className="section-image">
-            <img src="/images/learning-process.png" alt="Викладач пояснює учневі геометричну задачу" width="900" height="760" loading="lazy" />
+            <img src="/images/learning-process.png" alt="Репетитор з математики пояснює учневі розв’язання геометричної задачі" width="900" height="760" loading="lazy" />
             <div className="image-note"><strong>Не просто відповідь</strong><span>а розуміння логіки рішення</span></div>
           </div>
           <div className="split-copy">
@@ -239,7 +239,7 @@ export default function Home() {
               <article><Icon>✓</Icon><div><h3>З’являється впевненість</h3><p>Учень знає, із чого почати задачу й як перевірити себе.</p></div></article>
               <article><Icon>✓</Icon><div><h3>Є вимірюваний прогрес</h3><p>Результат видно у шкільних оцінках і пробних тестах.</p></div></article>
             </div>
-            <div className="result-image"><img src="/images/student-success.png" alt="Учні радіють своєму прогресу в математиці" width="900" height="760" loading="lazy" /></div>
+            <div className="result-image"><img src="/images/student-success.png" alt="Учні впевнено демонструють прогрес у вивченні математики" width="900" height="760" loading="lazy" /></div>
           </div>
           <div className="center-cta"><button className="button button-primary" onClick={() => openForm("results")}>Почати підготовку до НМТ <span>→</span></button></div>
         </section>
