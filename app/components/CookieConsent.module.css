@@ -1,0 +1,129 @@
+.banner {
+  position: fixed;
+  z-index: 10000;
+  right: 20px;
+  bottom: 20px;
+  left: 20px;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid rgba(255, 255, 255, .15);
+  border-radius: 20px;
+  background: #17231f;
+  color: #f8faf8;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, .28);
+}
+
+.copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.icon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #f4ca48;
+  color: #17231f;
+  font-family: Georgia, serif;
+  font-size: 25px;
+}
+
+.copy h2 {
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: 19px;
+  line-height: 1.25;
+}
+
+.copy p {
+  max-width: 670px;
+  margin: 0;
+  color: #d6dfda;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.copy a {
+  color: #f7d66d;
+  font-weight: 700;
+}
+
+.actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+}
+
+.actions button,
+.settingsButton {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.accept {
+  background: #f4ca48;
+  color: #17231f;
+}
+
+.reject {
+  border-color: #7d8c85 !important;
+  background: transparent;
+  color: #fff;
+}
+
+.actions button:hover { transform: translateY(-1px); }
+
+.actions button:focus-visible,
+.settingsButton:focus-visible {
+  outline: 3px solid #73b9ff;
+  outline-offset: 3px;
+}
+
+.settingsButton {
+  position: fixed;
+  z-index: 9999;
+  left: 18px;
+  bottom: 18px;
+  min-height: 38px;
+  padding: 7px 12px;
+  border: 1px solid #b8c3be;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .96);
+  color: #244a3b;
+  box-shadow: 0 8px 25px rgba(25, 38, 33, .15);
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .banner {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    padding: 18px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .actions { width: 100%; }
+  .actions button { flex: 1; }
+}
+
+@media (max-width: 420px) {
+  .copy .icon { display: none; }
+  .actions { flex-direction: column-reverse; }
+}
