@@ -265,7 +265,7 @@ export default function Home() {
         <a className="brand footer-brand" href="#top"><span className="brand-mark">π</span><span>Math<span>Lab</span></span></a>
         <p>Математика 5–12 класи · Підготовка до НМТ 2026 · Онлайн по Україні</p>
         <div><a href="tel:+380932862886">+380 (93) 286-28-86</a><a href="mailto:repetytor.in.zp@gmail.com">repetytor.in.zp@gmail.com</a></div>
-        <small>© 2026 MathLab. Персональні дані використовуються лише для зворотного зв’язку.</small>
+        <small>© 2026 MathLab. <a href="/privacy-policy">Політика конфіденційності</a></small>
       </footer>
 
       {modalOpen && (
@@ -295,7 +295,7 @@ export default function Home() {
                   <input type="text" name="website" tabIndex={-1} autoComplete="off" className="honeypot" aria-hidden="true" />
                   {status === "error" && <div className="form-error">Не вдалося надіслати запит. Зателефонуйте нам: <a href="tel:+380932862886">+380 (93) 286-28-86</a>.</div>}
                   <button className="button button-primary submit-button" disabled={status === "sending"}>{status === "sending" ? "Надсилаємо…" : "Надіслати запит →"}</button>
-                  <small>Натискаючи кнопку, ви погоджуєтеся на обробку даних для отримання зворотного зв’язку.</small>
+                  <small>Натискаючи кнопку, ви погоджуєтеся на обробку даних відповідно до <a href="/privacy-policy" target="_blank" rel="noreferrer">Політики конфіденційності</a>.</small>
                 </form>
               </>
             )}
