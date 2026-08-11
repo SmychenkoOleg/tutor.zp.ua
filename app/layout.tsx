@@ -20,6 +20,10 @@ export const metadata: Metadata = {
     "Зрозуміти математику й повірити у свої сили — онлайн разом із професійним репетитором. Індивідуальні заняття для 5–12 класів і підготовка до НМТ.",
   alternates: {
     canonical: "/",
+    languages: {
+      uk: "/",
+      "x-default": "/",
+    },
   },
   openGraph: {
     type: "website",
