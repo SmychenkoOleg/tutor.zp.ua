@@ -1,20 +1,14 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import content from "../content/site.json";
 
 const PHONE_CODES = new Set([
   "039", "050", "063", "066", "067", "068", "073", "075", "077", "089",
   "091", "092", "093", "094", "095", "096", "097", "098", "099",
 ]);
 
-const ctas: Record<string, string> = {
-  hero: "Записатися на безкоштовну консультацію",
-  programs: "Підібрати програму навчання",
-  approach: "Обговорити цілі учня",
-  tutor: "Познайомитися з викладачем",
-  results: "Почати підготовку до НМТ",
-  faq: "Поставити запитання",
-};
+const ctas = content.ctas;
 
 function formatPhone(value: string) {
   const digits = value.replace(/\D/g, "").replace(/^38/, "").slice(0, 10);
@@ -130,13 +124,13 @@ export default function Home() {
           <span /><span /><span />
         </button>
         <nav className={menuOpen ? "nav open" : "nav"} aria-label="Основна навігація">
-          <a href="#programs" onClick={() => setMenuOpen(false)}>Напрями</a>
-          <a href="#approach" onClick={() => setMenuOpen(false)}>Як навчаємось</a>
-          <a href="#tutor" onClick={() => setMenuOpen(false)}>Про викладача</a>
-          <a href="#results" onClick={() => setMenuOpen(false)}>Результати</a>
-          <a href="#faq" onClick={() => setMenuOpen(false)}>FAQ</a>
+          <a href="#programs" onClick={() => setMenuOpen(false)}>{content.navigation.programs}</a>
+          <a href="#approach" onClick={() => setMenuOpen(false)}>{content.navigation.approach}</a>
+          <a href="#tutor" onClick={() => setMenuOpen(false)}>{content.navigation.tutor}</a>
+          <a href="#results" onClick={() => setMenuOpen(false)}>{content.navigation.results}</a>
+          <a href="#faq" onClick={() => setMenuOpen(false)}>{content.navigation.faq}</a>
         </nav>
-        <a className="header-phone" href="tel:+380932862886">+380 (93) 286-28-86</a>
+        <a className="header-phone" href={content.contact.phoneHref}>{content.contact.phone}</a>
         <button className="button button-small" onClick={() => openForm("hero")}>Консультація</button>
       </header>
 
@@ -144,22 +138,20 @@ export default function Home() {
         <section className="hero section">
           <div className="math-scribble scribble-one">x² + y²</div>
           <div className="hero-copy">
-            <div className="eyebrow"><span>●</span> Математика без страху й зубріння</div>
-            <h1>Зрозуміти математику.<br /><em>Повірити у свої сили.</em></h1>
-            <p className="hero-lead">Індивідуальні заняття для учнів 5–12 класів та системна підготовка до НМТ 2026. Складне стає зрозумілим — крок за кроком.</p>
+            <div className="eyebrow"><span>●</span> {content.hero.eyebrow}</div>
+            <h1>{content.hero.headline}<br /><em>{content.hero.emphasis}</em></h1>
+            <p className="hero-lead">{content.hero.description}</p>
             <div className="hero-actions">
               <button className="button button-primary" onClick={() => openForm("hero")}>Записатися на консультацію <span>→</span></button>
-              <a className="text-link" href="tel:+380932862886">або зателефонувати</a>
+              <a className="text-link" href={content.contact.phoneHref}>або зателефонувати</a>
             </div>
             <div className="trust-row">
-              <div><strong>10+</strong><span>років досвіду</span></div>
-              <div><strong>5–12</strong><span>класи</span></div>
-              <div><strong>100%</strong><span>учнів склали добре+</span></div>
+              {content.hero.stats.map((stat) => <div key={stat.label}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}
             </div>
           </div>
           <div className="hero-visual">
             <div className="image-card">
-              <img src="/images/hero-math.png" alt="Онлайн-заняття з репетитором з математики для учнів 5–12 класів" width="900" height="760" fetchPriority="high" />
+              <img src={content.images.hero.src} alt={content.images.hero.alt} width="900" height="760" fetchPriority="high" />
             </div>
             <div className="float-card float-top"><Icon>✓</Icon><span><strong>Чіткий план</strong> до результату</span></div>
             <div className="float-card float-bottom"><strong>НМТ 2026</strong><span>Підготовка без стресу</span></div>
@@ -168,46 +160,35 @@ export default function Home() {
 
         <section id="programs" className="section programs">
           <div className="section-heading">
-            <div><span className="kicker">Напрями навчання</span><h2>Підтягнути оцінку чи скласти НМТ — <em>є чіткий маршрут</em></h2></div>
-            <p>Програма будується навколо реального рівня, темпу та мети учня — без зайвого навантаження.</p>
+            <div><span className="kicker">{content.programs.label}</span><h2>{content.programs.headline} <em>{content.programs.emphasis}</em></h2></div>
+            <p>{content.programs.description}</p>
           </div>
           <div className="program-grid">
-            <article className="program-card blue">
-              <Icon>∑</Icon><span className="tag">5–9 класи</span>
-              <h3>Міцна шкільна база</h3>
-              <p>Закриваємо прогалини, розбираємо поточні теми, готуємося до контрольних і підвищуємо впевненість.</p>
-              <ul><li>Алгебра й геометрія</li><li>Домашні завдання з розумінням</li><li>Систематизація знань</li></ul>
-            </article>
-            <article className="program-card yellow">
-              <Icon>ƒ</Icon><span className="tag">10–11 класи</span>
-              <h3>Профільна математика</h3>
-              <p>Поглиблюємо знання, вчимося бачити логіку задач і готуємося до наступного освітнього кроку.</p>
-              <ul><li>Складні теми простими словами</li><li>Практика різних типів задач</li><li>Власний темп навчання</li></ul>
-            </article>
-            <article className="program-card coral">
-              <Icon>↗</Icon><span className="tag">НМТ 2026</span>
-              <h3>Системна підготовка</h3>
-              <p>Діагностика, персональний план, практика за форматом тесту та контроль прогресу до самого іспиту.</p>
-              <ul><li>Усі теми програми НМТ</li><li>Таймінг і стратегія тесту</li><li>Регулярні пробні варіанти</li></ul>
-            </article>
+            {content.programs.items.map((program) => (
+              <article key={program.id} className={`program-card ${program.theme}`}>
+                <Icon>{program.icon}</Icon><span className="tag">{program.tag}</span>
+                <h3>{program.title}</h3>
+                <p>{program.description}</p>
+                <ul>{program.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>
+              </article>
+            ))}
           </div>
           <div className="center-cta"><button className="button button-primary" onClick={() => openForm("programs")}>Підібрати програму навчання <span>→</span></button></div>
         </section>
 
         <section id="approach" className="section split-section">
           <div className="section-image">
-            <img src="/images/learning-process.png" alt="Репетитор з математики пояснює учневі розв’язання геометричної задачі" width="900" height="760" loading="lazy" />
-            <div className="image-note"><strong>Не просто відповідь</strong><span>а розуміння логіки рішення</span></div>
+            <img src={content.images.approach.src} alt={content.images.approach.alt} width="900" height="760" loading="lazy" />
+            <div className="image-note"><strong>{content.approach.imageNoteTitle}</strong><span>{content.approach.imageNoteDescription}</span></div>
           </div>
           <div className="split-copy">
-            <span className="kicker">Як проходить навчання</span>
-            <h2>Спокійно, послідовно й <em>на зрозумілій мові</em></h2>
-            <p>Починаємо з короткої діагностики. Далі формуємо маршрут: від прогалин у базі — до впевненого розв’язання задач потрібного рівня.</p>
+            <span className="kicker">{content.approach.label}</span>
+            <h2>{content.approach.headline} <em>{content.approach.emphasis}</em></h2>
+            <p>{content.approach.description}</p>
             <ol className="steps">
-              <li><span>01</span><div><strong>Діагностика знань</strong><p>Знаходимо сильні сторони й теми, які потребують уваги.</p></div></li>
-              <li><span>02</span><div><strong>Персональний план</strong><p>Визначаємо реалістичну мету, ритм і контрольні точки.</p></div></li>
-              <li><span>03</span><div><strong>Пояснення + практика</strong><p>Вчимося мислити, а не запам’ятовувати шаблони.</p></div></li>
-              <li><span>04</span><div><strong>Видимий прогрес</strong><p>Регулярно перевіряємо результат і коригуємо маршрут.</p></div></li>
+              {content.approach.steps.map((step, index) => (
+                <li key={step.title}><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{step.title}</strong><p>{step.description}</p></div></li>
+              ))}
             </ol>
             <button className="button button-dark" onClick={() => openForm("approach")}>Обговорити цілі учня <span>→</span></button>
           </div>
@@ -215,47 +196,45 @@ export default function Home() {
 
         <section id="tutor" className="section tutor-section">
           <div className="tutor-intro">
-            <span className="kicker light">Про викладача</span>
-            <h2>Теорія, практика та <em>10+ років досвіду</em></h2>
-            <p>Викладач університету, аспірант і практикуючий інженер-розробник систем АСУТП. Це означає не лише знання формул, а й розуміння, як математика працює в реальному світі.</p>
+            <span className="kicker light">{content.tutor.label}</span>
+            <h2>{content.tutor.headline} <em>{content.tutor.emphasis}</em></h2>
+            <p>{content.tutor.description}</p>
             <button className="button button-light" onClick={() => openForm("tutor")}>Домовитися про знайомство <span>→</span></button>
           </div>
           <div className="credential-grid">
-            <article><Icon>⌂</Icon><h3>Викладає в університеті</h3><p>Академічна точність і вміння пояснювати складні поняття.</p></article>
-            <article><Icon>◎</Icon><h3>Навчається в аспірантурі</h3><p>Постійно розвивається та працює з сучасними підходами.</p></article>
-            <article><Icon>⚙</Icon><h3>Практикуючий інженер</h3><p>Розробляє системи АСУТП та показує прикладне значення знань.</p></article>
-            <article><Icon>10+</Icon><h3>Років репетиторства</h3><p>Досвід роботи з різними рівнями, цілями й темпами учнів.</p></article>
+            {content.tutor.credentials.map((credential) => (
+              <article key={credential.title}><Icon>{credential.icon}</Icon><h3>{credential.title}</h3><p>{credential.description}</p></article>
+            ))}
           </div>
         </section>
 
         <section id="results" className="section results">
           <div className="section-heading">
-            <div><span className="kicker">Результат співпраці</span><h2>Від «я не розумію» до <em>«я можу це розв’язати»</em></h2></div>
-            <p>Усі учні викладача складали ЗНО/НМТ з математики не нижче рівня «добре».</p>
+            <div><span className="kicker">{content.results.label}</span><h2>{content.results.headline} <em>{content.results.emphasis}</em></h2></div>
+            <p>{content.results.description}</p>
           </div>
           <div className="result-layout">
             <div className="result-list">
-              <article><Icon>✓</Icon><div><h3>Зникають прогалини</h3><p>Нові теми більше не будуються на хиткому фундаменті.</p></div></article>
-              <article><Icon>✓</Icon><div><h3>З’являється впевненість</h3><p>Учень знає, із чого почати задачу й як перевірити себе.</p></div></article>
-              <article><Icon>✓</Icon><div><h3>Є вимірюваний прогрес</h3><p>Результат видно у шкільних оцінках і пробних тестах.</p></div></article>
+              {content.results.items.map((result) => (
+                <article key={result.title}><Icon>✓</Icon><div><h3>{result.title}</h3><p>{result.description}</p></div></article>
+              ))}
             </div>
-            <div className="result-image"><img src="/images/student-success.png" alt="Учні впевнено демонструють прогрес у вивченні математики" width="900" height="760" loading="lazy" /></div>
+            <div className="result-image"><img src={content.images.results.src} alt={content.images.results.alt} width="900" height="760" loading="lazy" /></div>
           </div>
           <div className="center-cta"><button className="button button-primary" onClick={() => openForm("results")}>Почати підготовку до НМТ <span>→</span></button></div>
         </section>
 
         <section className="section final-cta">
-          <div><span className="kicker light">Перший крок — простий</span><h2>Розкажіть, яка мета стоїть перед учнем</h2><p>На безкоштовній консультації визначимо поточну ситуацію, формат занять і найкращий маршрут до результату.</p></div>
-          <div className="final-actions"><button className="button button-yellow" onClick={() => openForm("hero")}>Отримати консультацію <span>→</span></button><a href="tel:+380932862886">+380 (93) 286-28-86</a></div>
+          <div><span className="kicker light">{content.finalCta.label}</span><h2>{content.finalCta.headline}</h2><p>{content.finalCta.description}</p></div>
+          <div className="final-actions"><button className="button button-yellow" onClick={() => openForm("hero")}>Отримати консультацію <span>→</span></button><a href={content.contact.phoneHref}>{content.contact.phone}</a></div>
         </section>
 
         <section id="faq" className="section faq">
-          <div className="section-heading"><div><span className="kicker">Часті запитання</span><h2>Коротко про <em>важливе</em></h2></div></div>
+          <div className="section-heading"><div><span className="kicker">{content.faq.label}</span><h2>{content.faq.headline} <em>{content.faq.emphasis}</em></h2></div></div>
           <div className="faq-list">
-            <details><summary>У якому форматі проходять заняття?<span>+</span></summary><p>Формат узгоджується на консультації відповідно до місця проживання, цілей та можливостей учня. Онлайн-заняття доступні по всій Україні.</p></details>
-            <details><summary>Коли варто починати підготовку до НМТ?<span>+</span></summary><p>Чим раніше, тим спокійніше можна пройти програму, але персональний план можливо скласти й для коротшого терміну після діагностики знань.</p></details>
-            <details><summary>Як зрозуміти, з яких тем починати?<span>+</span></summary><p>На старті проводиться діагностика. Вона показує не лише помилки, а й причини, через які вони виникають.</p></details>
-            <details><summary>Чи задаються домашні завдання?<span>+</span></summary><p>Так, але в розумному обсязі. Завдання закріплюють саме те, що опрацьовано на занятті, та допомагають відстежувати прогрес.</p></details>
+            {content.faq.items.map((faq) => (
+              <details key={faq.question}><summary>{faq.question}<span>+</span></summary><p>{faq.answer}</p></details>
+            ))}
           </div>
           <div className="center-cta"><button className="button button-dark" onClick={() => openForm("faq")}>Поставити своє запитання <span>→</span></button></div>
         </section>
@@ -263,8 +242,8 @@ export default function Home() {
 
       <footer>
         <a className="brand footer-brand" href="#top"><span className="brand-mark">π</span><span>Math<span>Lab</span></span></a>
-        <p>Математика 5–12 класи · Підготовка до НМТ 2026 · Онлайн по Україні</p>
-        <div><a href="tel:+380932862886">+380 (93) 286-28-86</a><a href="mailto:repetytor.in.zp@gmail.com">repetytor.in.zp@gmail.com</a></div>
+        <p>{content.footer.tagline}</p>
+        <div><a href={content.contact.phoneHref}>{content.contact.phone}</a><a href={`mailto:${content.contact.email}`}>{content.contact.email}</a></div>
         <small>© 2026 MathLab. <a href="/privacy-policy">Політика конфіденційності</a></small>
       </footer>
 
@@ -293,7 +272,7 @@ export default function Home() {
                     {errors.email && <span className="field-error">{errors.email}</span>}
                   </label>
                   <input type="text" name="website" tabIndex={-1} autoComplete="off" className="honeypot" aria-hidden="true" />
-                  {status === "error" && <div className="form-error">Не вдалося надіслати запит. Зателефонуйте нам: <a href="tel:+380932862886">+380 (93) 286-28-86</a>.</div>}
+                  {status === "error" && <div className="form-error">Не вдалося надіслати запит. Зателефонуйте нам: <a href={content.contact.phoneHref}>{content.contact.phone}</a>.</div>}
                   <button className="button button-primary submit-button" disabled={status === "sending"}>{status === "sending" ? "Надсилаємо…" : "Надіслати запит →"}</button>
                   <small>Натискаючи кнопку, ви погоджуєтеся на обробку даних відповідно до <a href="/privacy-policy" target="_blank" rel="noreferrer">Політики конфіденційності</a>.</small>
                 </form>

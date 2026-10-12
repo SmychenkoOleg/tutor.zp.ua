@@ -1,0 +1,29 @@
+name: Content checks
+on:
+  pull_request:
+    paths:
+      - 'content/**'
+      - '.pages.yml'
+      - 'app/page.tsx'
+      - 'app/layout.tsx'
+      - 'tests/content-config.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - 'content/**'
+      - '.pages.yml'
+      - 'app/page.tsx'
+      - 'app/layout.tsx'
+      - 'tests/content-config.test.mjs'
+permissions:
+  contents: read
+jobs:
+  validate-content:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate editable content
+        run: node --test tests/content-config.test.mjs

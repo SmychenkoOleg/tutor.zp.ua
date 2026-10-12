@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import CookieConsent from "./components/CookieConsent";
+import content from "../content/site.json";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,9 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://tutor.zp.ua"),
-  title: "Зрозуміти математику | Репетитор з математики онлайн",
-  description:
-    "Зрозуміти математику й повірити у свої сили — онлайн разом із професійним репетитором. Індивідуальні заняття для 5–12 класів і підготовка до НМТ.",
+  title: content.seo.title,
+  description: content.seo.description,
   alternates: {
     canonical: "/",
     languages: {
@@ -30,16 +30,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "uk_UA",
     url: "/",
-    siteName: "MathLab",
-    title: "Зрозуміти математику. Повірити у свої сили.",
-    description:
-      "Онлайн-заняття з професійним репетитором з математики для учнів 5–12 класів і підготовки до НМТ.",
+    siteName: content.seo.siteName,
+    title: content.seo.openGraphTitle,
+    description: content.seo.openGraphDescription,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Зрозуміти математику. Повірити у свої сили.",
-    description:
-      "Онлайн-заняття з професійним репетитором з математики для учнів 5–12 класів і підготовки до НМТ.",
+    title: content.seo.openGraphTitle,
+    description: content.seo.openGraphDescription,
   },
   robots: {
     index: true,
