@@ -66,3 +66,22 @@ npx wrangler deploy --config wrangler.preview.jsonc
 - Cloudflare API-токени й секрети — тільки в Cloudflare/GitHub Secrets. Не додавати `.env`, `.dev.vars` та секрети до комітів.
 - Наявність окремої Workers.dev-адреси не означає, що працівник є приватним.
 - Перед запуском з тестовими реальними заявками — включити контроль доступу до preview.
+
+## Парольний захист без Zero Trust
+
+Тестовий Worker використовує HTTP Basic Authentication. Це окремий вхід `worker/preview-entry.mjs`, який накладає захист **до** серверних маршрутів і статичних файлів (`assets.run_worker_first: true`). Він працює тільки у preview-конфігурації Cloudflare, а не в основному застосунку.
+
+1. Переконайтесь, що у Cloudflare → `tutor-zp-ua-preview` → **Settings → Variables and Secrets** створено змінну:
+   - **Name:** `PREVIEW_AUTH_PASSWORD`
+   - **Type:** `Secret` (НЕ Plaintext!)
+   - **Value:** ваш випадковий унікальний пароль з не менше ніж 20 символів ASCII.
+2. Збережіть та розгорніть налаштування (Cloudflare може створити нову версію Worker). Пароль не потрібно додавати в GitHub чи надсилати в чат.
+3. Переконайтесь, що остання збірка тестової Git-гілки **Ready**. Потім у **Domains** увімкніть **Production Worker URL** `workers.dev` для цього тестового Worker. **Preview URL** можна залишити вимкненим.
+4. У браузері відкрийте URL з Cloudflare. Ім'я користувача: **`preview`**, пароль: значення `PREVIEW_AUTH_PASSWORD`.
+5. Без Secret або з коротким паролем Worker поверне **503** і нічого не віддасть; з неправильними даними **401**; із правильним паролем відкриє сайт та ресурси.
+
+Захист також додає `X-Robots-Tag: noindex`, `Cache-Control: no-store` і CSP, яка блокує сторонні Analytics/GTM на тестовій адресі. `X-Robots-Tag` — додатковий сигнал; основний захист забезпечує автентифікація.
+
+**Увага:** пароль Basic Auth зберігається у сесії браузера, й інтерфейс не має кнопки виходу. Для завершення доступу закрийте приватне вікно або змініть пароль у Cloudflare. Використовуйте лише HTTPS (`workers.dev`). Рекомендований надійний пароль — випадковий і унікальний, від 24 символів.
+
+Тести захисту: `node --test tests/preview-access.test.mjs` (після `npm run build`).
