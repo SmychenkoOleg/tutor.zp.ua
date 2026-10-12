@@ -30,7 +30,7 @@ jobs:
         run: npm run build
 
       - name: Test server-rendered HTML
-        run: node --test tests/rendered-html.test.mjs
+        run: node --test tests/production-rendered-html.test.mjs
 
       - name: Test CMS content
         run: node --test tests/content-config.test.mjs
