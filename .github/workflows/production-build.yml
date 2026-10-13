@@ -47,6 +47,9 @@ jobs:
       - name: Test CRM CSV export and deletion
         run: node --test tests/crm-records.test.mjs
 
+      - name: Test lead form hints, validation and warning UX
+        run: node --experimental-strip-types --test tests/lead-form-validation.test.mjs
+
       - name: Test smart mobile CTA visibility
         run: node --experimental-strip-types --test tests/sticky-cta.test.mjs
 
