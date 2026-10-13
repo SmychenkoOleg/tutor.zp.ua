@@ -44,6 +44,9 @@ jobs:
       - name: Test D1 CRM and administrator access
         run: node --test tests/crm-leads.test.mjs
 
+      - name: Test device category classification and D1 integration
+        run: node --test tests/crm-device.test.mjs
+
       - name: Test CRM CSV export and deletion
         run: node --test tests/crm-records.test.mjs
 
