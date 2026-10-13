@@ -3,26 +3,11 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import content from "../content/site.json";
 import { shouldShowStickyCta } from "./stickyCtaVisibility";
+import { formatUkrainianPhone, nameHasOnlyAllowedCharacters, validateLeadField, validateLeadForm } from "./leadFormValidation";
+import type { LeadField, LeadFormErrors } from "./leadFormValidation";
 import CookieSettingsTrigger from "./components/CookieSettingsTrigger";
 
-const PHONE_CODES = new Set([
-  "039", "050", "063", "066", "067", "068", "073", "075", "077", "089",
-  "091", "092", "093", "094", "095", "096", "097", "098", "099",
-]);
-
 const ctas = content.ctas;
-
-function formatPhone(value: string) {
-  const digits = value.replace(/\D/g, "").replace(/^38/, "").slice(0, 10);
-  if (!digits) return "";
-  let result = "+38";
-  if (digits.length) result += ` (${digits.slice(0, 3)}`;
-  if (digits.length >= 3) result += ")";
-  if (digits.length > 3) result += ` ${digits.slice(3, 6)}`;
-  if (digits.length > 6) result += `-${digits.slice(6, 8)}`;
-  if (digits.length > 8) result += `-${digits.slice(8, 10)}`;
-  return result;
-}
 
 function Icon({ children }: { children: React.ReactNode }) {
   return <span className="icon" aria-hidden="true">{children}</span>;
@@ -35,7 +20,8 @@ export default function Home() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<LeadFormErrors>({});
+  const [warning, setWarning] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const menuToggleRef = useRef<HTMLButtonElement>(null);
   const menuNavRef = useRef<HTMLElement>(null);
@@ -109,63 +95,70 @@ export default function Home() {
     };
   }, [menuOpen]);
 
+  // Centered, non-blocking warnings are dismissed by the next tap anywhere.
+  useEffect(() => {
+    if (!warning) return;
+    const dismiss = () => setWarning("");
+    document.addEventListener("pointerdown", dismiss);
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") dismiss();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", dismiss);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [warning]);
+
+  const closeForm = () => {
+    setModalOpen(false);
+    setWarning("");
+  };
+
   const openForm = (key: keyof typeof ctas) => {
     setIntent(ctas[key]);
     setModalOpen(true);
     setMenuOpen(false);
     setStatus("idle");
+    setWarning("");
+    setErrors({});
   };
 
   const onPhone = (value: string) => {
-    const digits = value.replace(/\D/g, "").replace(/^38/, "").slice(0, 10);
-    if (digits.length >= 3 && !PHONE_CODES.has(digits.slice(0, 3))) {
-      window.alert("Введіть дійсний український мобільний номер телефону");
-      setPhone("");
-      return;
-    }
-    setPhone(formatPhone(digits));
-    setErrors((prev) => ({ ...prev, phone: "" }));
+    setPhone(formatUkrainianPhone(value));
+    setErrors((prev) => ({ ...prev, phone: undefined }));
   };
 
   const onName = (value: string) => {
-    if (value.length > 101 || /[^\p{L}\s]/u.test(value)) {
-      window.alert("Чекаємо Вашого справжнього імені та прізвища буквами!");
-      setName("");
+    if (value.length > 101 || !nameHasOnlyAllowedCharacters(value)) {
+      setWarning("Для імені та прізвища використовуйте тільки літери й один пробіл між словами.");
       return;
     }
-    setName(value.replace(/\s{2,}/g, " "));
-    setErrors((prev) => ({ ...prev, name: "" }));
+    setName(value.replace(/ {2,}/g, " "));
+    setErrors((prev) => ({ ...prev, name: undefined }));
+  };
+
+  const onFieldBlur = (field: LeadField) => {
+    const values = { name, phone, email };
+    const value = values[field];
+    // Don't warn while the visitor has not entered anything yet.
+    if (!value.trim()) return;
+    const error = validateLeadField(field, value);
+    setErrors((prev) => ({ ...prev, [field]: error || undefined }));
+    if (error) setWarning(error);
   };
 
   const validate = () => {
-    const next: Record<string, string> = {};
-    const words = name.trim().split(/\s+/);
-    if (!name.trim()) next.name = "Вкажіть ім’я та прізвище.";
-    else if (
-      words.length !== 2 ||
-      words.some((word) => word.length > 50 || !/^\p{L}+$/u.test(word))
-    ) next.name = "Введіть рівно два слова, лише буквами.";
-
-    const digits = phone.replace(/\D/g, "").replace(/^38/, "");
-    if (!phone) next.phone = "Вкажіть номер телефону.";
-    else if (digits.length !== 10 || !PHONE_CODES.has(digits.slice(0, 3))) {
-      next.phone = "Введіть дійсний український мобільний номер.";
-    }
-
-    if (!email.trim()) next.email = "Вкажіть e-mail.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email) || email.length > 254) {
-      next.email = "Перевірте правильність e-mail.";
-    }
+    const next = validateLeadForm({ name, phone, email });
     setErrors(next);
-    return Object.keys(next).length === 0;
+    const first = next.name || next.phone || next.email;
+    if (first) setWarning(first);
+    return !first;
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!validate()) {
-      window.alert("Будь ласка, заповніть усі поля правильно.");
-      return;
-    }
+    if (!validate()) return;
     setStatus("sending");
     try {
       const response = await fetch("/api/lead", {
@@ -178,6 +171,7 @@ export default function Home() {
       setName(""); setPhone(""); setEmail("");
     } catch {
       setStatus("error");
+      setWarning("Не вдалося надіслати запит. Спробуйте ще раз або зателефонуйте нам.");
     }
   };
 
@@ -318,11 +312,11 @@ export default function Home() {
       </footer>
 
       {modalOpen && (
-        <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) setModalOpen(false); }}>
+        <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) closeForm(); }}>
           <div className="modal" role="dialog" aria-modal="true" aria-labelledby="lead-title">
-            <button className="modal-close" onClick={() => setModalOpen(false)} aria-label="Закрити форму">×</button>
+            <button className="modal-close" onClick={closeForm} aria-label="Закрити форму">×</button>
             {status === "success" ? (
-              <div className="success-message"><Icon>✓</Icon><h2>Дякуємо!</h2><p>Запит отримано. Викладач зв’яжеться з вами найближчим часом.</p><button className="button button-primary" onClick={() => setModalOpen(false)}>Готово</button></div>
+              <div className="success-message"><Icon>✓</Icon><h2>Дякуємо!</h2><p>Запит отримано. Викладач зв’яжеться з вами найближчим часом.</p><button className="button button-primary" onClick={closeForm}>Готово</button></div>
             ) : (
               <>
                 <span className="kicker">Безкоштовна консультація</span>
@@ -330,16 +324,16 @@ export default function Home() {
                 <p>Залиште контакти — обговоримо рівень учня, мету та зручний формат занять.</p>
                 <form onSubmit={submit} noValidate>
                   <label>Ім’я та прізвище
-                    <input value={name} onChange={(e) => onName(e.target.value)} onBlur={() => validate()} placeholder="Ім’я Прізвище" autoComplete="name" maxLength={101} aria-invalid={!!errors.name} />
-                    {errors.name && <span className="field-error">{errors.name}</span>}
+                    <input value={name} onChange={(e) => onName(e.target.value)} onBlur={() => onFieldBlur("name")} placeholder="Ізольда Пампушенко" autoComplete="name" maxLength={101} aria-invalid={!!errors.name} aria-describedby="name-hint" required />
+                    <span id="name-hint" className="field-hint">Вкажіть ваше ім'я та прізвище</span>
                   </label>
                   <label>Номер телефону
-                    <input value={phone} onChange={(e) => onPhone(e.target.value)} onBlur={() => validate()} placeholder="+380 (12) 345-67-89" inputMode="numeric" autoComplete="tel" aria-invalid={!!errors.phone} />
-                    {errors.phone && <span className="field-error">{errors.phone}</span>}
+                    <input type="tel" value={phone} onChange={(e) => onPhone(e.target.value)} onBlur={() => onFieldBlur("phone")} placeholder="(ХХХ) YYY-YY-YY" inputMode="tel" autoComplete="tel" aria-invalid={!!errors.phone} aria-describedby="phone-hint" required />
+                    <span id="phone-hint" className="field-hint">Вкажіть дійсний український номер</span>
                   </label>
                   <label>E-mail
-                    <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: "" })); }} onBlur={() => validate()} placeholder="name@example.com" autoComplete="email" maxLength={254} aria-invalid={!!errors.email} />
-                    {errors.email && <span className="field-error">{errors.email}</span>}
+                    <input type="email" value={email} onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }} onBlur={() => onFieldBlur("email")} placeholder="name@example.com" autoComplete="email" maxLength={254} aria-invalid={!!errors.email} aria-describedby="email-hint" required />
+                    <span id="email-hint" className="field-hint">Вкажіть дійсний e-mail</span>
                   </label>
                   <input type="text" name="website" tabIndex={-1} autoComplete="off" className="honeypot" aria-hidden="true" />
                   {status === "error" && <div className="form-error">Не вдалося надіслати запит. Зателефонуйте нам: <a href={content.contact.phoneHref}>{content.contact.phone}</a>.</div>}
@@ -348,6 +342,15 @@ export default function Home() {
                 </form>
               </>
             )}
+          </div>
+        </div>
+      )}
+      {warning && (
+        <div className="validation-notice" role="alert" aria-live="assertive">
+          <div className="validation-notice-content">
+            <strong>Перевірте введені дані</strong>
+            <p>{warning}</p>
+            <small>Натисніть будь-де, щоб закрити повідомлення</small>
           </div>
         </div>
       )}
