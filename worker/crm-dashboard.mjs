@@ -21,7 +21,7 @@ select,textarea{border:1px solid #c9d3e5;background:white}
 label{font-weight:600}
 .toolbar-group{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .scroll{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:1280px;font-size:13px}
+table{border-collapse:collapse;width:100%;min-width:1400px;font-size:13px}
 td,th{padding:11px 9px;text-align:left;vertical-align:top;border-bottom:1px solid #e2e9f1}
 th{white-space:nowrap;background:#f6f8fc}
 td{overflow-wrap:anywhere;max-width:255px}
@@ -61,7 +61,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 <div class="scroll">
 <table aria-label="Список заявок">
 <thead><tr><th><input type="checkbox" id="select-all" aria-label="Вибрати всі заявки на цій сторінці"></th>
-<th>Дата</th><th>Ім'я та Прізвище</th><th>Телефон</th><th>e-mail</th>
+<th>Дата</th><th>Ім'я та Прізвище</th><th>Телефон</th><th>e-mail</th><th>Пристрій</th>
 <th>Мета / джерело</th><th>Статус</th><th>Примітка</th><th>Telegram</th><th>Дії</th></tr></thead>
 <tbody id="rows"></tbody></table></div>
 <p class="note">Таблиця показує останні 50 заявок за вибраним статусом. Експорт охоплює всі заявки за цим фільтром (до 10 000). Видалення з D1 є незворотним.</p>
@@ -70,6 +70,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 const tableBody=document.getElementById('rows');
 const info=document.getElementById('message');
 const chosen=new Set();
+const deviceNames={mobile:'Мобільний',desktop:'Комп’ютер',tablet:'Планшет',tv:'Телевізор',unknown:'Невідомо'};
 const statuses=[['new','Нова'],['in_progress','У роботі'],['completed','Завершена'],['cancelled','Скасована']];
 let visible=[];
 let busy=false;
@@ -91,7 +92,7 @@ function updateSelection(){
 }
 function render(leads){
  visible=leads;chosen.clear();tableBody.replaceChildren();
- if(!visible.length){const tr=document.createElement('tr');const td=cell(tr,'За вибраним фільтром заявок немає.');td.colSpan=10;tableBody.append(tr);}
+ if(!visible.length){const tr=document.createElement('tr');const td=cell(tr,'За вибраним фільтром заявок немає.');td.colSpan=11;tableBody.append(tr);}
  for(const lead of visible){
   const tr=document.createElement('tr');
   const selectTd=cell(tr,'');
@@ -103,6 +104,7 @@ function render(leads){
   cell(tr,lead.name);
   cell(tr,lead.phone);
   cell(tr,lead.email);
+  cell(tr,Object.prototype.hasOwnProperty.call(deviceNames,lead.device_type)?deviceNames[lead.device_type]:deviceNames.unknown);
   cell(tr,[lead.intent,lead.source].filter(Boolean).join(' / '));
   const statusTd=cell(tr,'');const select=document.createElement('select');
   select.setAttribute('aria-label','Статус заявки '+lead.name);
