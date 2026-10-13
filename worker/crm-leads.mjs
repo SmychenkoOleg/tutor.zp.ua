@@ -2,7 +2,7 @@
 const codes = new Set(["039","050","063","066","067","068","073","075","077","089","091","092","093","094","095","096","097","098","099"]);
 const nameRule = /^\p{L}+\s+\p{L}+$/u;
 const emailRule = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-export const respond = (body, status = 200) => Response.json(body, { status, headers: { "Cache-Control": "no-store" } });
+export const respond = (body, status = 200, extraHeaders = {}) => Response.json(body, { status, headers: { "Cache-Control": "private, no-store", ...extraHeaders } });
 
 export async function storeLead(request, env, send = fetch) {
   if (!env.LEADS_DB?.prepare) return respond({ error: "database_unavailable" }, 503);
