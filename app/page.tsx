@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import content from "../content/site.json";
 import { shouldShowStickyCta } from "./stickyCtaVisibility";
 import CookieSettingsTrigger from "./components/CookieSettingsTrigger";
@@ -37,6 +37,8 @@ export default function Home() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+  const menuNavRef = useRef<HTMLElement>(null);
   const [stickyCtaVisible, setStickyCtaVisible] = useState(false);
 
   useEffect(() => {
@@ -48,8 +50,9 @@ export default function Home() {
     const targets = Array.from(document.querySelectorAll<HTMLButtonElement>("button[data-form-cta]"));
     if (!targets.length || !("IntersectionObserver" in window)) return;
 
-    // All visible form CTAs share one observer. Exclude the fixed header and the
-    // bottom sticky-control area so a CTA counts only when it is actually usable.
+    // A CTA must take priority from its very first visible pixel. Extend the
+    // bottom detection boundary 96px beyond the viewport so the sticky button
+    // is removed BEFORE an approaching in-page CTA reaches its occupied area.
     const visible = new Map<Element, boolean>();
     const initialized = new Set<Element>();
     const updateVisibility = () => {
@@ -64,12 +67,12 @@ export default function Home() {
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         initialized.add(entry.target);
-        visible.set(entry.target, entry.isIntersecting && entry.intersectionRatio >= 0.5);
+        visible.set(entry.target, entry.isIntersecting);
       }
       updateVisibility();
     }, {
-      rootMargin: "-66px 0px -78px 0px",
-      threshold: [0, 0.5, 1],
+      rootMargin: "0px 0px 96px 0px",
+      threshold: 0,
     });
 
     for (const target of targets) observer.observe(target);
@@ -82,6 +85,29 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const closeOutside = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node)) return;
+      if (menuToggleRef.current?.contains(target) || menuNavRef.current?.contains(target)) return;
+      setMenuOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+        menuToggleRef.current?.focus();
+      }
+    };
+
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [menuOpen]);
 
   const openForm = (key: keyof typeof ctas) => {
     setIntent(ctas[key]);
@@ -162,10 +188,10 @@ export default function Home() {
           <span className="brand-mark">π</span>
           <span>Math<span>Lab</span></span>
         </a>
-        <button className="menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-label="Відкрити меню">
+        <button ref={menuToggleRef} type="button" className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-controls="home-mobile-navigation" aria-expanded={menuOpen} aria-label={menuOpen ? "Закрити меню" : "Відкрити меню"}>
           <span /><span /><span />
         </button>
-        <nav className={menuOpen ? "nav open" : "nav"} aria-label="Основна навігація">
+        <nav ref={menuNavRef} id="home-mobile-navigation" className={menuOpen ? "nav open" : "nav"} aria-label="Основна навігація">
           <a href="#programs" onClick={() => setMenuOpen(false)}>{content.navigation.programs}</a>
           <a href="#approach" onClick={() => setMenuOpen(false)}>{content.navigation.approach}</a>
           <a href="#tutor" onClick={() => setMenuOpen(false)}>{content.navigation.tutor}</a>

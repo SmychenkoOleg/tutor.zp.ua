@@ -28,8 +28,10 @@ test("all seven in-page lead CTAs are observed, excluding sticky button and form
   assert.equal((page.match(/data-form-cta\b/g) ?? []).length, 8); // 7 JSX markers + query selector.
   assert.match(page, /querySelectorAll<HTMLButtonElement>\("button\[data-form-cta\]"\)/);
   assert.match(page, /IntersectionObserver\(/);
-  assert.match(page, /rootMargin: "-66px 0px -78px 0px"/);
-  assert.match(page, /intersectionRatio >= 0\.5/);
+  assert.match(page, /rootMargin: "0px 0px 96px 0px"/);
+  assert.match(page, /threshold: 0/);
+  assert.match(page, /entry\.isIntersecting\)/);
+  assert.doesNotMatch(page, /intersectionRatio >= 0\.5/);
   assert.match(page, /observer\.disconnect\(\)/);
 });
 

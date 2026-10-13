@@ -55,3 +55,29 @@ test("privacy policy offers navigable mobile menu back to home sections and cook
   assert.match(css, /\.mobileNav\[hidden\] \{ display: none; \}/);
   assert.match(css, /@media \(max-width: 820px\)/);
 });
+
+test("menus on home and privacy close on outside pointer, Escape and item selection", () => {
+  const home = read("app/page.tsx");
+  const privacyMenu = read("app/privacy-policy/PrivacyMobileMenu.tsx");
+  const homeCSS = read("app/globals.css");
+  const privacyCSS = read("app/privacy-policy/privacy.module.css");
+
+  assert.match(home, /ref=\{menuToggleRef\}/);
+  assert.match(home, /ref=\{menuNavRef\}/);
+  assert.match(home, /aria-label=\{menuOpen \? "Закрити меню" : "Відкрити меню"\}/);
+  assert.match(home, /document\.addEventListener\("pointerdown", closeOutside\)/);
+  assert.match(home, /document\.removeEventListener\("pointerdown", closeOutside\)/);
+  assert.match(home, /menuToggleRef\.current\?\.contains\(target\)/);
+  assert.match(home, /menuNavRef\.current\?\.contains\(target\)/);
+  assert.match(home, /event\.key === "Escape"/);
+  assert.match(home, /onClick=\{\(\) => setMenuOpen\(false\)\}/);
+
+  assert.match(privacyMenu, /ref=\{menuRef\}/);
+  assert.match(privacyMenu, /ref=\{toggleRef\}/);
+  assert.match(privacyMenu, /document\.addEventListener\("pointerdown", closeOutside\)/);
+  assert.match(privacyMenu, /document\.removeEventListener\("pointerdown", closeOutside\)/);
+  assert.match(privacyMenu, /event\.key === "Escape"/);
+  assert.match(privacyMenu, /onClick=\{\(\) => setIsOpen\(false\)\}/);
+  assert.match(homeCSS, /\.menu-button\[aria-expanded="true"\] span:nth-child\(1\) \{ transform:rotate\(45deg\)/);
+  assert.match(privacyCSS, /\.menuButton\[aria-expanded="true"\] span:nth-child\(3\) \{ transform: rotate\(-45deg\)/);
+});
