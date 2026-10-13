@@ -23,3 +23,15 @@ export function classifyDevice(request) {
   if (mobileHint === "?1") return "mobile";
   return "unknown";
 }
+
+const LABELS = Object.freeze({
+  mobile: "Мобільний",
+  desktop: "Комп’ютер",
+  tablet: "Планшет",
+  tv: "Телевізор",
+  unknown: "Невідомо",
+});
+
+export function deviceTypeLabel(type) {
+  return Object.hasOwn(LABELS, type ?? "") ? LABELS[type] : LABELS.unknown;
+}
