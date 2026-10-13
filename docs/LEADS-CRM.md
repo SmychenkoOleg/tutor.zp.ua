@@ -90,3 +90,29 @@ npx wrangler d1 execute tutor-zp-ua-leads-preview --remote --file migrations/000
 - Відкриття таблиці або скачування CSV через API без CRM-сесії повертає 401; на сайті тестового Worker додатково діє HTTP Basic Authentication.
 
 Перевірка: `node --test tests/crm-records.test.mjs` і загальний GitHub Actions CI.
+
+## 9. Категорія пристрою в заявці
+
+З 13 жовтня 2026 у тестову D1 вручну додано поле `device_type` згідно з `migrations/0002_lead_device_type.sql`:
+
+```sql
+ALTER TABLE leads
+ADD COLUMN device_type TEXT NOT NULL DEFAULT 'unknown'
+CHECK (device_type IN ('mobile', 'desktop', 'tablet', 'tv', 'unknown'));
+```
+
+**Повторно виконувати цю міграцію в тій самій базі не треба** — SQLite видасть помилку повторного додавання колонки. Заявки, створені до міграції, залишаються з `device_type='unknown'`.
+
+Для кожної нової заявки тестовий Worker визначає категорію за доступним HTTP `User-Agent` і, як допоміжним сигналом, `Sec-CH-UA-Mobile` без запису оригінального рядка або IP в D1:
+
+| Значення у D1 | Відображення у CRM та CSV |
+|---|---|
+| `mobile` | Мобільний |
+| `desktop` | Комп’ютер |
+| `tablet` | Планшет |
+| `tv` | Телевізор |
+| `unknown` | Невідомо |
+
+Категорія — наближене визначення, а не гарантована інформація про тип фізичного пристрою. Наприклад, iPad у режимі десктопного браузера іноді може визначатися як комп’ютер. Клієнтське поле `device_type` у формі **ігнорується**; категорію обчислює сервер. Нові дані видно в колонці «Пристрій» і в обох форматах CSV після успішного розгортання відповідної версії Worker.
+
+Перевірки: `node --test tests/crm-device.test.mjs`. Тестів GitHub Actions недостатньо для підтвердження фактичного деплою в Cloudflare — після `Ready` слід надіслати одну тестову заявку й звірити категорію в CRM та експорті.
