@@ -1,3 +1,6 @@
+import { storeLead } from "./crm-leads.mjs";
+import { handleAdmin } from "./crm-admin.mjs";
+
 // Only used by the isolated Cloudflare preview Worker, never by tutor.zp.ua.
 export const PREVIEW_USERNAME = "preview";
 export const MIN_PASSWORD_LENGTH = 20;
@@ -66,9 +69,18 @@ export function createPreviewWorker(siteWorker) {
       }
 
       const pathname = new URL(request.url).pathname;
-      const response = staticAsset(pathname)
-        ? await env.ASSETS.fetch(request)
-        : await siteWorker.fetch(request, env, ctx);
+      let response;
+      if (pathname.startsWith("/admin")) {
+        response = await handleAdmin(request, env);
+      } else if (pathname === "/api/lead" && env.LEADS_DB?.prepare) {
+        // Activate D1 intake only after a migrated database has been bound.
+        // Without the binding the previously tested Telegram route keeps working.
+        response = await storeLead(request, env);
+      } else {
+        response = staticAsset(pathname)
+          ? await env.ASSETS.fetch(request)
+          : await siteWorker.fetch(request, env, ctx);
+      }
       return securedResponse(response);
     },
   };
