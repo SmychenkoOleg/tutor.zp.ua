@@ -1,5 +1,6 @@
 // Export and deletion run only after the CRM's authenticated router authorizes the request.
 import { respond } from "./crm-leads.mjs";
+import { deviceTypeLabel } from "./crm-device.mjs";
 
 export const validLeadId = value =>
   typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(value);
@@ -24,8 +25,8 @@ function phoneCsv(value) {
   return quoteCsv(original);
 }
 
-const columns = ["Дата", "Ім’я та Прізвище", "Телефон", "e-mail", "Мета", "Джерело", "Статус", "Примітка", "Telegram", "ID"];
-const fields = ["created_at", "name", "phone", "email", "intent", "source", "status", "admin_note", "telegram_status", "id"];
+const columns = ["Дата", "Ім’я та Прізвище", "Телефон", "e-mail", "Пристрій", "Мета", "Джерело", "Статус", "Примітка", "Telegram", "ID"];
+const fields = ["created_at", "name", "phone", "email", "device_type", "intent", "source", "status", "admin_note", "telegram_status", "id"];
 
 export function makeCsv(rows, format = "excel") {
   if (!["excel", "comma"].includes(format)) throw new RangeError("Unknown CSV format");
@@ -34,7 +35,7 @@ export function makeCsv(rows, format = "excel") {
   if (format === "excel") lines.push("sep=;");
   lines.push(columns.map(x => quoteCsv(x)).join(delimiter));
   for (const row of rows) {
-    lines.push(fields.map(field => field === "phone" ? phoneCsv(row[field]) : quoteCsv(row[field])).join(delimiter));
+    lines.push(fields.map(field => field === "phone" ? phoneCsv(row[field]) : quoteCsv(field === "device_type" ? deviceTypeLabel(row[field]) : row[field])).join(delimiter));
   }
   return "\uFEFF" + lines.join("\r\n") + "\r\n";
 }
