@@ -150,6 +150,9 @@ content:
           - { name: label, label: "Надзаголовок", type: string }
           - { name: headline, label: "Заголовок", type: string }
           - { name: emphasis, label: "Акцент", type: string }
+          - { name: ctaHeading, label: "Заголовок блоку зворотного зв'язку", type: string, required: true }
+          - { name: ctaDescription, label: "Текст запрошення залишити контакти", type: text, required: true }
+          - { name: ctaButton, label: "Текст CTA-кнопки", type: string, required: true }
           - name: items
             label: "Запитання та відповіді"
             type: object
