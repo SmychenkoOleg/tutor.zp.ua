@@ -1,3 +1,5 @@
+import { classifyDevice } from "./crm-device.mjs";
+
 // Optional D1 integration for preview; legacy Telegram stays active until D1 is bound.
 const codes = new Set(["039","050","063","066","067","068","073","075","077","089","091","092","093","094","095","096","097","098","099"]);
 const nameRule = /^\p{L}+\s+\p{L}+$/u;
@@ -35,8 +37,8 @@ export async function storeLead(request, env, send = fetch) {
     if (referer.origin === new URL(request.url).origin) source = referer.pathname.slice(0, 150);
   } catch {}
   try {
-    await env.LEADS_DB.prepare("INSERT INTO leads (id,name,phone,email,intent,source) VALUES (?,?,?,?,?,?)")
-      .bind(id, name, phone, email, intent, source).run();
+    await env.LEADS_DB.prepare("INSERT INTO leads (id,name,phone,email,intent,source,device_type) VALUES (?,?,?,?,?,?,?)")
+      .bind(id, name, phone, email, intent, source, classifyDevice(request)).run();
   } catch {
     console.error("CRM insert failed");
     return respond({ error: "database_write_failed" }, 503);
