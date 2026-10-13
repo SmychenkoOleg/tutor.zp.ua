@@ -1,5 +1,7 @@
 import { configured, passwordMatches, hasSession, createSession, setCookie, deleteCookie, sameOrigin } from "./crm-auth.mjs";
-import { loginHtml, dashboardHtml } from "./crm-admin-ui.mjs";
+import { loginHtml } from "./crm-admin-ui.mjs";
+import { dashboardHtml } from "./crm-dashboard.mjs";
+import { exportLeads, deleteOneLead, deleteSelectedLeads } from "./crm-records.mjs";
 import { respond } from "./crm-leads.mjs";
 
 const STATUSES = new Set(["new", "in_progress", "completed", "cancelled"]);
@@ -61,7 +63,22 @@ export async function handleAdmin(request, env) {
     }
   }
 
+  if (request.method === "GET" && path === "/admin/api/leads/export") {
+    const status = url.searchParams.get("status");
+    if (status && !STATUSES.has(status)) return respond({ error: "invalid_status" }, 400);
+    return exportLeads(request, env, status);
+  }
+
+  if (request.method === "POST" && path === "/admin/api/leads/bulk-delete") {
+    if (!sameOrigin(request)) return respond({ error: "invalid_origin" }, 403);
+    return deleteSelectedLeads(request, env);
+  }
+
   const match = /^\/admin\/api\/leads\/([0-9a-f-]{36})$/.exec(path);
+  if (match && request.method === "DELETE") {
+    if (!sameOrigin(request)) return respond({ error: "invalid_origin" }, 403);
+    return deleteOneLead(env, match[1]);
+  }
   if (match && request.method === "PATCH") {
     if (!sameOrigin(request)) return respond({ error: "invalid_origin" }, 403);
     let change;
