@@ -14,6 +14,7 @@ button { cursor:pointer; }
 .brand-mark { display:grid; place-items:center; width:38px; height:38px; border-radius:12px; background:var(--blue); color:white; font-family:Georgia,serif; font-style:italic; }
 .nav { display:flex; gap:clamp(14px,2vw,28px); margin-left:auto; font-weight:700; font-size:clamp(14px,.9vw,15px); }
 .nav a:hover { color:var(--blue); }
+.nav-cookie-settings, .footer-cookie-settings { display:none; }
 .header-phone { font-weight:800; white-space:nowrap; }
 .button { border:0; border-radius:14px; padding:16px 23px; font-weight:850; min-height:52px; display:inline-flex; align-items:center; justify-content:center; gap:18px; transition:.2s ease; }
 .button:hover { transform:translateY(-2px); box-shadow:0 12px 24px rgba(34,58,153,.18); }
@@ -113,7 +114,8 @@ footer { padding:45px max(20px,calc((100% - 1180px)/2)); background:#eef1fa; dis
 footer p { color:var(--muted); margin:0; text-align:center; line-height:1.6; }
 footer>div { display:flex; flex-direction:column; gap:7px; align-items:flex-end; font-weight:800; }
 footer small { grid-column:1/-1; text-align:center; color:var(--muted); font-size:clamp(14px,.85vw,14px); }
-.modal-backdrop { position:fixed; inset:0; z-index:100; padding:18px; display:grid; place-items:center; background:rgba(8,18,53,.68); backdrop-filter:blur(8px); }
+.nav-cookie-settings:focus-visible, .footer-cookie-settings:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.modal-backdrop { position:fixed; inset:0; z-index:10001; padding:18px; display:grid; place-items:center; background:rgba(8,18,53,.68); backdrop-filter:blur(8px); }
 .modal { position:relative; width:min(520px,100%); max-height:calc(100vh - 36px); overflow:auto; padding:clamp(28px,4vw,45px); border-radius:28px; background:white; box-shadow:0 30px 80px rgba(0,0,0,.3); }
 .modal-close { position:absolute; top:15px; right:17px; width:38px; height:38px; border:0; border-radius:50%; background:#eff2fa; color:var(--ink); font-size:26px; }
 .modal h2 { font-size:clamp(28px,3vw,39px); margin:12px 35px 10px 0; }
@@ -147,6 +149,19 @@ footer small { grid-column:1/-1; text-align:center; color:var(--muted); font-siz
   .menu-button { display:block; margin-left:auto; }
   .nav { display:none; position:absolute; top:66px; left:0; right:0; padding:18px 22px 24px; background:var(--paper); border-bottom:1px solid var(--line); flex-direction:column; box-shadow:0 14px 25px rgba(20,38,98,.1); }
   .nav.open { display:flex; }
+  .nav-cookie-settings {
+    display:inline-flex; align-items:center; align-self:flex-start;
+    min-height:44px; padding:10px 0; border:0; background:transparent;
+    color:var(--ink); font:inherit; font-weight:700; text-align:left;
+  }
+  .nav-cookie-settings:hover { color:var(--blue); }
+  .footer-cookie-settings {
+    display:inline-flex; justify-self:center; align-items:center; justify-content:center;
+    grid-column:1/-1; min-height:44px; padding:8px 14px;
+    border:1px solid #bac5dc; border-radius:999px; background:transparent;
+    color:var(--ink); font-size:14px; font-weight:700;
+    text-decoration:underline; text-underline-offset:3px;
+  }
   .section { width:min(100% - 30px,650px); }
   .hero { min-height:auto; grid-template-columns:1fr; padding-top:52px; }
   .hero-copy { text-align:center; }
@@ -165,7 +180,8 @@ footer small { grid-column:1/-1; text-align:center; color:var(--muted); font-siz
   .final-cta { flex-direction:column; text-align:center; }
   footer { grid-template-columns:1fr; text-align:center; padding:40px 20px; }
   footer p,footer>div,footer small { grid-column:1; align-items:center; }
-  .mobile-contact { display:block; position:fixed; z-index:48; left:12px; right:12px; bottom:10px; width:calc(100% - 24px); border:0; border-radius:13px; min-height:50px; background:var(--blue); color:white; font-weight:900; box-shadow:0 8px 28px rgba(25,47,140,.35); }
+  .mobile-contact { display:block; position:fixed; z-index:48; left:12px; right:12px; bottom:max(10px, env(safe-area-inset-bottom)); width:calc(100% - 24px); border:0; border-radius:13px; min-height:50px; background:var(--blue); color:white; font-weight:900; box-shadow:0 8px 28px rgba(25,47,140,.35); }
+  body.cookie-banner-open .mobile-contact { display:none; }
 }
 @media (max-width:520px) {
   h1 { font-size:clamp(39px,12vw,54px); }

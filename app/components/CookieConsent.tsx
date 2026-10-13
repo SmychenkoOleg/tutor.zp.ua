@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./CookieConsent.module.css";
+import { OPEN_COOKIE_SETTINGS_EVENT } from "./cookieSettingsEvent";
 
 type ConsentChoice = "accepted" | "rejected";
 
@@ -51,6 +52,20 @@ export default function CookieConsent() {
     const saved = localStorage.getItem(STORAGE_KEY);
     setChoice(saved === "accepted" || saved === "rejected" ? saved : null);
   }, []);
+
+  useEffect(() => {
+    const openPreferences = () => setSettingsOpen(true);
+    window.addEventListener(OPEN_COOKIE_SETTINGS_EVENT, openPreferences);
+    return () => window.removeEventListener(OPEN_COOKIE_SETTINGS_EVENT, openPreferences);
+  }, []);
+
+  // Keep the mobile conversion CTA completely clear while consent is required.
+  // This also applies when a visitor reopens cookie preferences from the menu.
+  const bannerOpen = choice === null || settingsOpen;
+  useEffect(() => {
+    document.body.classList.toggle("cookie-banner-open", bannerOpen);
+    return () => document.body.classList.remove("cookie-banner-open");
+  }, [bannerOpen]);
 
   const saveChoice = (nextChoice: ConsentChoice) => {
     localStorage.setItem(STORAGE_KEY, nextChoice);

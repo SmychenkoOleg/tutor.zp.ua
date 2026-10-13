@@ -41,5 +41,8 @@ jobs:
       - name: Test lead API without Telegram credentials
         run: node --test tests/lead-api.test.mjs
 
+      - name: Test cookie UI regression safeguards
+        run: node --test tests/cookie-controls.test.mjs
+
       - name: Test CMS content
         run: node --test tests/content-config.test.mjs

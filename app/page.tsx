@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import content from "../content/site.json";
+import CookieSettingsTrigger from "./components/CookieSettingsTrigger";
 
 const PHONE_CODES = new Set([
   "039", "050", "063", "066", "067", "068", "073", "075", "077", "089",
@@ -129,6 +130,7 @@ export default function Home() {
           <a href="#tutor" onClick={() => setMenuOpen(false)}>{content.navigation.tutor}</a>
           <a href="#results" onClick={() => setMenuOpen(false)}>{content.navigation.results}</a>
           <a href="#faq" onClick={() => setMenuOpen(false)}>{content.navigation.faq}</a>
+          <CookieSettingsTrigger className="nav-cookie-settings" onActivate={() => setMenuOpen(false)} />
         </nav>
         <a className="header-phone" href={content.contact.phoneHref}>{content.contact.phone}</a>
         <button className="button button-small" onClick={() => openForm("hero")}>Консультація</button>
@@ -244,6 +246,7 @@ export default function Home() {
         <a className="brand footer-brand" href="#top"><span className="brand-mark">π</span><span>Math<span>Lab</span></span></a>
         <p>{content.footer.tagline}</p>
         <div><a href={content.contact.phoneHref}>{content.contact.phone}</a><a href={`mailto:${content.contact.email}`}>{content.contact.email}</a></div>
+        <CookieSettingsTrigger className="footer-cookie-settings" />
         <small>© 2026 MathLab. <a href="/privacy-policy">Політика конфіденційності</a></small>
       </footer>
 

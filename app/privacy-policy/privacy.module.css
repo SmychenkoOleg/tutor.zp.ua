@@ -149,6 +149,24 @@
 }
 
 .footer a { color: #fff; }
+.cookieSettingsButton { display: none; }
+.cookieSettingsButton:focus-visible { outline: 3px solid #73b9ff; outline-offset: 3px; }
+
+@media (max-width: 820px) {
+  .cookieSettingsButton {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    border: 1px solid #dbe4df;
+    border-radius: 999px;
+    background: transparent;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+  }
+}
 
 @media (max-width: 640px) {
   .header { align-items: flex-start; }

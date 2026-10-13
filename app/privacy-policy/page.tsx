@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import styles from "./privacy.module.css";
+import CookieSettingsTrigger from "../components/CookieSettingsTrigger";
 
 export const metadata: Metadata = {
   title: "Політика конфіденційності | MathLab",
@@ -187,6 +188,7 @@ export default function PrivacyPolicyPage() {
       <footer className={styles.footer}>
         <span>© 2026 MathLab</span>
         <Link href="/">Головна сторінка</Link>
+        <CookieSettingsTrigger className={styles.cookieSettingsButton} />
         <a href="mailto:repetytor.in.zp@gmail.com">repetytor.in.zp@gmail.com</a>
       </footer>
     </>
