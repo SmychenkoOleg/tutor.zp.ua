@@ -21,8 +21,8 @@ function createDb() {
     bind(...values) { this.values = values; return this; },
     async run() {
       if (sql.startsWith("INSERT")) {
-        const [id, name, phone, email, intent, source] = this.values;
-        rows.push({ id, name, phone, email, intent, source, status: "new",
+        const [id, name, phone, email, intent, source, device_type] = this.values;
+        rows.push({ id, name, phone, email, intent, source, device_type, status: "new",
           telegram_status: "pending", admin_note: "", created_at: new Date().toISOString() });
         return { success: true };
       }
@@ -79,6 +79,7 @@ test("D1 commit is retained when Telegram is unavailable", async () => {
   assert.equal((await response.json()).telegram, "failed");
   assert.equal(db.rows.length, 1);
   assert.equal(db.rows[0].status, "new");
+  assert.equal(db.rows[0].device_type, "unknown");
   assert.equal(db.rows[0].telegram_status, "failed");
 });
 test("D1 record and Telegram delivery status both succeed", async () => {
