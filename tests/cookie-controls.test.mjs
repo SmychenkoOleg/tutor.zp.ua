@@ -38,3 +38,20 @@ test("cookie control opens the existing consent component, not a duplicate state
   assert.match(consent, /removeEventListener\(OPEN_COOKIE_SETTINGS_EVENT, openPreferences\)/);
   assert.match(event, /mathlab:open-cookie-settings/);
 });
+
+test("privacy policy offers navigable mobile menu back to home sections and cookies", () => {
+  const privacy = read("app/privacy-policy/page.tsx");
+  const menu = read("app/privacy-policy/PrivacyMobileMenu.tsx");
+  const css = read("app/privacy-policy/privacy.module.css");
+  assert.match(privacy, /<PrivacyMobileMenu \/>/);
+  assert.match(menu, /href="\/" onClick/);
+  for (const section of ["programs", "approach", "tutor", "results", "faq"]) {
+    assert.ok(menu.includes(`href: "/#${section}"`), `Missing home anchor ${section}`);
+  }
+  assert.match(menu, /CookieSettingsTrigger/);
+  assert.match(menu, /aria-expanded=\{isOpen\}/);
+  assert.match(menu, /hidden=\{!isOpen\}/);
+  assert.match(menu, /event.key === "Escape"/);
+  assert.match(css, /\.mobileNav\[hidden\] \{ display: none; \}/);
+  assert.match(css, /@media \(max-width: 820px\)/);
+});
