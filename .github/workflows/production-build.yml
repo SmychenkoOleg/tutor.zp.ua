@@ -41,6 +41,9 @@ jobs:
       - name: Test lead API without Telegram credentials
         run: node --test tests/lead-api.test.mjs
 
+      - name: Test D1 CRM and administrator access
+        run: node --test tests/crm-leads.test.mjs
+
       - name: Test smart mobile CTA visibility
         run: node --experimental-strip-types --test tests/sticky-cta.test.mjs
 
