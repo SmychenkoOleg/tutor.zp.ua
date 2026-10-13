@@ -50,3 +50,23 @@ test('images use local public paths and have alt text', () => {
     nonempty(content.images[key].alt, `images.${key}.alt`);
   }
 });
+
+test('FAQ callback invitation matches its contact-only form and remains editable in CMS', () => {
+  const page = readFileSync(new URL('../app/page.tsx', import.meta.url), 'utf8');
+  const cms = readFileSync(new URL('../.pages.yml', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../app/globals.css', import.meta.url), 'utf8');
+  assert.equal(content.faq.ctaHeading, 'Залишилися запитання?');
+  assert.equal(content.faq.ctaButton, 'Зв’яжіться зі мною');
+  assert.equal(content.ctas.faq, 'Залиште контакти для зворотного зв’язку');
+  assert.match(content.faq.ctaDescription, /Залиште свої контакти/);
+  assert.match(page, /<h3>\{content\.faq\.ctaHeading\}<\/h3>/);
+  assert.match(page, /<p>\{content\.faq\.ctaDescription\}<\/p>/);
+  assert.match(page, /<button data-form-cta className="button button-dark" onClick=\{\(\) => openForm\("faq"\)\}>/);
+  assert.match(page, /\{content\.faq\.ctaButton\}/);
+  assert.doesNotMatch(page, /Поставити своє запитання/);
+  for (const field of ['ctaHeading','ctaDescription','ctaButton']) {
+    assert.ok(cms.includes('name: ' + field), 'CMS does not expose ' + field);
+  }
+  assert.match(css, /\.faq-follow-up \{/);
+  assert.match(page, /setIntent\(ctas\[key\]\)/);
+});
