@@ -23,7 +23,7 @@ test("CTA is hidden during consent and floating cookie button hidden on mobile",
   const css = read("app/globals.css");
   const moduleCss = read("app/components/CookieConsent.module.css");
   const consent = read("app/components/CookieConsent.tsx");
-  assert.match(css, /body\.cookie-banner-open \.mobile-contact\s*\{ display:none; \}/);
+  assert.match(css, /body\.cookie-banner-open \.mobile-contact\s*\{ opacity:0; visibility:hidden; pointer-events:none/);
   assert.match(consent, /choice === null \|\| settingsOpen/);
   assert.match(consent, /classList\.toggle\("cookie-banner-open", bannerOpen\)/);
   assert.match(moduleCss, /@media \(max-width: 820px\)\s*\{\s*\.settingsButton\s*\{ display: none; \}/);

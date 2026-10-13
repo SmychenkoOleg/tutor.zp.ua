@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import content from "../content/site.json";
+import { shouldShowStickyCta } from "./stickyCtaVisibility";
 import CookieSettingsTrigger from "./components/CookieSettingsTrigger";
 
 const PHONE_CODES = new Set([
@@ -36,11 +37,51 @@ export default function Home() {
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [menuOpen, setMenuOpen] = useState(false);
+  const [stickyCtaVisible, setStickyCtaVisible] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = modalOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [modalOpen]);
+
+  useEffect(() => {
+    const targets = Array.from(document.querySelectorAll<HTMLButtonElement>("button[data-form-cta]"));
+    if (!targets.length || !("IntersectionObserver" in window)) return;
+
+    // All visible form CTAs share one observer. Exclude the fixed header and the
+    // bottom sticky-control area so a CTA counts only when it is actually usable.
+    const visible = new Map<Element, boolean>();
+    const initialized = new Set<Element>();
+    const updateVisibility = () => {
+      if (initialized.size !== targets.length) return;
+      setStickyCtaVisible(shouldShowStickyCta({
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        scrollY: window.scrollY,
+        otherCtaVisible: Array.from(visible.values()).some(Boolean),
+      }));
+    };
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        initialized.add(entry.target);
+        visible.set(entry.target, entry.isIntersecting && entry.intersectionRatio >= 0.5);
+      }
+      updateVisibility();
+    }, {
+      rootMargin: "-66px 0px -78px 0px",
+      threshold: [0, 0.5, 1],
+    });
+
+    for (const target of targets) observer.observe(target);
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    window.addEventListener("resize", updateVisibility);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", updateVisibility);
+      window.removeEventListener("resize", updateVisibility);
+    };
+  }, []);
+
 
   const openForm = (key: keyof typeof ctas) => {
     setIntent(ctas[key]);
@@ -144,7 +185,7 @@ export default function Home() {
             <h1>{content.hero.headline}<br /><em>{content.hero.emphasis}</em></h1>
             <p className="hero-lead">{content.hero.description}</p>
             <div className="hero-actions">
-              <button className="button button-primary" onClick={() => openForm("hero")}>Записатися на консультацію <span>→</span></button>
+              <button data-form-cta className="button button-primary" onClick={() => openForm("hero")}>Записатися на консультацію <span>→</span></button>
               <a className="text-link" href={content.contact.phoneHref}>або зателефонувати</a>
             </div>
             <div className="trust-row">
@@ -175,7 +216,7 @@ export default function Home() {
               </article>
             ))}
           </div>
-          <div className="center-cta"><button className="button button-primary" onClick={() => openForm("programs")}>Підібрати програму навчання <span>→</span></button></div>
+          <div className="center-cta"><button data-form-cta className="button button-primary" onClick={() => openForm("programs")}>Підібрати програму навчання <span>→</span></button></div>
         </section>
 
         <section id="approach" className="section split-section">
@@ -192,7 +233,7 @@ export default function Home() {
                 <li key={step.title}><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{step.title}</strong><p>{step.description}</p></div></li>
               ))}
             </ol>
-            <button className="button button-dark" onClick={() => openForm("approach")}>Обговорити цілі учня <span>→</span></button>
+            <button data-form-cta className="button button-dark" onClick={() => openForm("approach")}>Обговорити цілі учня <span>→</span></button>
           </div>
         </section>
 
@@ -201,7 +242,7 @@ export default function Home() {
             <span className="kicker light">{content.tutor.label}</span>
             <h2>{content.tutor.headline} <em>{content.tutor.emphasis}</em></h2>
             <p>{content.tutor.description}</p>
-            <button className="button button-light" onClick={() => openForm("tutor")}>Домовитися про знайомство <span>→</span></button>
+            <button data-form-cta className="button button-light" onClick={() => openForm("tutor")}>Домовитися про знайомство <span>→</span></button>
           </div>
           <div className="credential-grid">
             {content.tutor.credentials.map((credential) => (
@@ -223,12 +264,12 @@ export default function Home() {
             </div>
             <div className="result-image"><img src={content.images.results.src} alt={content.images.results.alt} width="900" height="760" loading="lazy" /></div>
           </div>
-          <div className="center-cta"><button className="button button-primary" onClick={() => openForm("results")}>Почати підготовку до НМТ <span>→</span></button></div>
+          <div className="center-cta"><button data-form-cta className="button button-primary" onClick={() => openForm("results")}>Почати підготовку до НМТ <span>→</span></button></div>
         </section>
 
         <section className="section final-cta">
           <div><span className="kicker light">{content.finalCta.label}</span><h2>{content.finalCta.headline}</h2><p>{content.finalCta.description}</p></div>
-          <div className="final-actions"><button className="button button-yellow" onClick={() => openForm("hero")}>Отримати консультацію <span>→</span></button><a href={content.contact.phoneHref}>{content.contact.phone}</a></div>
+          <div className="final-actions"><button data-form-cta className="button button-yellow" onClick={() => openForm("hero")}>Отримати консультацію <span>→</span></button><a href={content.contact.phoneHref}>{content.contact.phone}</a></div>
         </section>
 
         <section id="faq" className="section faq">
@@ -238,7 +279,7 @@ export default function Home() {
               <details key={faq.question}><summary>{faq.question}<span>+</span></summary><p>{faq.answer}</p></details>
             ))}
           </div>
-          <div className="center-cta"><button className="button button-dark" onClick={() => openForm("faq")}>Поставити своє запитання <span>→</span></button></div>
+          <div className="center-cta"><button data-form-cta className="button button-dark" onClick={() => openForm("faq")}>Поставити своє запитання <span>→</span></button></div>
         </section>
       </main>
 
@@ -284,7 +325,13 @@ export default function Home() {
           </div>
         </div>
       )}
-      <button className="mobile-contact" onClick={() => openForm("hero")}>Записатися на консультацію</button>
+      <button
+        type="button"
+        className={`mobile-contact${stickyCtaVisible && !menuOpen && !modalOpen ? " is-visible" : ""}`}
+        aria-hidden={!(stickyCtaVisible && !menuOpen && !modalOpen)}
+        tabIndex={stickyCtaVisible && !menuOpen && !modalOpen ? 0 : -1}
+        onClick={() => openForm("hero")}
+      >Записатися на консультацію</button>
     </>
   );
 }
