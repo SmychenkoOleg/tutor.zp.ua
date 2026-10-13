@@ -44,6 +44,9 @@ jobs:
       - name: Test D1 CRM and administrator access
         run: node --test tests/crm-leads.test.mjs
 
+      - name: Test CRM CSV export and deletion
+        run: node --test tests/crm-records.test.mjs
+
       - name: Test smart mobile CTA visibility
         run: node --experimental-strip-types --test tests/sticky-cta.test.mjs
 
