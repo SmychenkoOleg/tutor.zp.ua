@@ -96,7 +96,7 @@
 
 .settingsButton {
   position: fixed;
-  z-index: 9999;
+  z-index: 60;
   left: 18px;
   bottom: 18px;
   min-height: 38px;
@@ -126,4 +126,14 @@
 @media (max-width: 420px) {
   .copy .icon { display: none; }
   .actions { flex-direction: column-reverse; }
+}
+
+/* Mobile preferences remain available in the navigation and footer instead. */
+@media (max-width: 820px) {
+  .settingsButton { display: none; }
+  .banner {
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    bottom: max(12px, env(safe-area-inset-bottom));
+  }
 }

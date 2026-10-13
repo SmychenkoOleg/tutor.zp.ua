@@ -1,0 +1,189 @@
+# Editing interface: https://app.pagescms.org (GitHub login required).
+# The CMS reads this file from the selected repository/branch.
+media:
+  input: public/images
+  output: /images
+  categories: [image]
+  rename: safe
+
+content:
+  - name: site
+    label: "MathLab — вміст сайту"
+    type: file
+    path: content/site.json
+    format: json
+    fields:
+      - name: contact
+        label: "Контакти"
+        type: object
+        fields:
+          - { name: phone, label: "Телефон для відображення", type: string, required: true }
+          - { name: phoneHref, label: "Посилання tel:+380...", type: string, required: true }
+          - { name: email, label: "Електронна пошта", type: string, required: true }
+      - name: seo
+        label: "SEO головної сторінки"
+        type: object
+        fields:
+          - { name: title, label: "Title", type: string, required: true }
+          - { name: description, label: "Meta description", type: text, required: true }
+          - { name: openGraphTitle, label: "Open Graph title", type: string, required: true }
+          - { name: openGraphDescription, label: "Open Graph description", type: text, required: true }
+          - { name: siteName, label: "Назва сайту", type: string, required: true }
+      - name: navigation
+        label: "Меню"
+        type: object
+        fields:
+          - { name: programs, label: "Навчальні програми", type: string }
+          - { name: approach, label: "Підхід", type: string }
+          - { name: tutor, label: "Викладач", type: string }
+          - { name: results, label: "Результати", type: string }
+          - { name: faq, label: "Запитання", type: string }
+      - name: ctas
+        label: "Теми заявок (передаються в Telegram)"
+        type: object
+        fields:
+          - { name: hero, label: "Головна", type: string, required: true }
+          - { name: programs, label: "Програми", type: string, required: true }
+          - { name: approach, label: "Підхід", type: string, required: true }
+          - { name: tutor, label: "Викладач", type: string, required: true }
+          - { name: results, label: "Результати", type: string, required: true }
+          - { name: faq, label: "FAQ", type: string, required: true }
+      - name: hero
+        label: "Перший екран"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Надзаголовок", type: string }
+          - { name: headline, label: "Заголовок", type: string, required: true }
+          - { name: emphasis, label: "Акцент заголовка", type: string, required: true }
+          - { name: description, label: "Підзаголовок", type: text, required: true }
+          - name: stats
+            label: "Показники"
+            type: object
+            list: { collapsible: { collapsed: true, summary: "{value}" } }
+            fields:
+              - { name: value, label: "Значення", type: string, required: true }
+              - { name: label, label: "Підпис", type: string, required: true }
+      - name: programs
+        label: "Програми навчання"
+        type: object
+        fields:
+          - { name: label, label: "Надзаголовок", type: string }
+          - { name: headline, label: "Заголовок", type: string }
+          - { name: emphasis, label: "Акцент", type: string }
+          - { name: description, label: "Опис", type: text }
+          - name: items
+            label: "Картки програм"
+            type: object
+            list: { collapsible: { collapsed: true, summary: "{title}" } }
+            fields:
+              - { name: id, label: "Унікальний ID", type: string, required: true }
+              - name: theme
+                label: "Колір картки"
+                type: select
+                required: true
+                options:
+                  values: [blue, yellow, coral]
+              - { name: icon, label: "Символ", type: string }
+              - { name: tag, label: "Класи", type: string }
+              - { name: title, label: "Назва", type: string, required: true }
+              - { name: description, label: "Опис", type: text }
+              - { name: bullets, label: "Переваги", type: string, list: true }
+      - name: approach
+        label: "Як проходить навчання"
+        type: object
+        fields:
+          - { name: label, label: "Надзаголовок", type: string }
+          - { name: headline, label: "Заголовок", type: string }
+          - { name: emphasis, label: "Акцент", type: string }
+          - { name: description, label: "Опис", type: text }
+          - { name: imageNoteTitle, label: "Напис на фото", type: string }
+          - { name: imageNoteDescription, label: "Підпис на фото", type: string }
+          - name: steps
+            label: "Етапи навчання"
+            type: object
+            list: { collapsible: { collapsed: true, summary: "{title}" } }
+            fields:
+              - { name: title, label: "Назва етапу", type: string, required: true }
+              - { name: description, label: "Опис етапу", type: text }
+      - name: tutor
+        label: "Про викладача"
+        type: object
+        fields:
+          - { name: label, label: "Надзаголовок", type: string }
+          - { name: headline, label: "Заголовок", type: string }
+          - { name: emphasis, label: "Акцент", type: string }
+          - { name: description, label: "Опис", type: text }
+          - name: credentials
+            label: "Кваліфікації"
+            type: object
+            list: { collapsible: { collapsed: true, summary: "{title}" } }
+            fields:
+              - { name: icon, label: "Символ", type: string }
+              - { name: title, label: "Заголовок", type: string, required: true }
+              - { name: description, label: "Опис", type: text }
+      - name: results
+        label: "Результати учнів"
+        type: object
+        fields:
+          - { name: label, label: "Надзаголовок", type: string }
+          - { name: headline, label: "Заголовок", type: string }
+          - { name: emphasis, label: "Акцент", type: string }
+          - { name: description, label: "Опис", type: text }
+          - name: items
+            label: "Результати"
+            type: object
+            list: { collapsible: { collapsed: true, summary: "{title}" } }
+            fields:
+              - { name: title, label: "Заголовок", type: string, required: true }
+              - { name: description, label: "Опис", type: text }
+      - name: finalCta
+        label: "Заклик до консультації"
+        type: object
+        fields:
+          - { name: label, label: "Надзаголовок", type: string }
+          - { name: headline, label: "Заголовок", type: string }
+          - { name: description, label: "Опис", type: text }
+      - name: faq
+        label: "Часті запитання"
+        type: object
+        fields:
+          - { name: label, label: "Надзаголовок", type: string }
+          - { name: headline, label: "Заголовок", type: string }
+          - { name: emphasis, label: "Акцент", type: string }
+          - { name: ctaHeading, label: "Заголовок блоку зворотного зв'язку", type: string, required: true }
+          - { name: ctaDescription, label: "Текст запрошення залишити контакти", type: text, required: true }
+          - { name: ctaButton, label: "Текст CTA-кнопки", type: string, required: true }
+          - name: items
+            label: "Запитання та відповіді"
+            type: object
+            list: { collapsible: { collapsed: true, summary: "{question}" } }
+            fields:
+              - { name: question, label: "Запитання", type: string, required: true }
+              - { name: answer, label: "Відповідь", type: text, required: true }
+      - name: images
+        label: "Зображення"
+        type: object
+        fields:
+          - name: hero
+            label: "Головне фото"
+            type: object
+            fields:
+              - { name: src, label: "Файл", type: image }
+              - { name: alt, label: "Alt-текст", type: string }
+          - name: approach
+            label: "Процес навчання"
+            type: object
+            fields:
+              - { name: src, label: "Файл", type: image }
+              - { name: alt, label: "Alt-текст", type: string }
+          - name: results
+            label: "Результати"
+            type: object
+            fields:
+              - { name: src, label: "Файл", type: image }
+              - { name: alt, label: "Alt-текст", type: string }
+      - name: footer
+        label: "Підвал сайту"
+        type: object
+        fields:
+          - { name: tagline, label: "Слоган", type: string }

@@ -1,0 +1,25 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "tutor-zp-ua-preview",
+  "main": "worker/preview-entry.mjs",
+  "compatibility_date": "2026-10-12",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "none",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "LEADS_DB",
+      "database_name": "tutor-zp-ua-leads-preview",
+      "database_id": "c6db82c4-78c4-49c9-888d-37de50e8a04d",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

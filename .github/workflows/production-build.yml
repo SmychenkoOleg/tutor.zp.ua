@@ -1,0 +1,63 @@
+name: Production build & rendered HTML
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  production-build:
+    name: Vinext build and HTML smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install exact dependencies
+        run: npm ci
+
+      - name: Production build and artifact validation
+        run: npm run build
+
+      - name: Validate Cloudflare preview Worker package (dry-run)
+        run: npx wrangler deploy --config wrangler.preview.jsonc --dry-run --outdir .wrangler-preview
+
+      - name: Test server-rendered HTML
+        run: node --test tests/production-rendered-html.test.mjs
+
+      - name: Test password protection of Cloudflare preview
+        run: node --test tests/preview-access.test.mjs
+
+      - name: Test lead API without Telegram credentials
+        run: node --test tests/lead-api.test.mjs
+
+      - name: Test D1 CRM and administrator access
+        run: node --test tests/crm-leads.test.mjs
+
+      - name: Test device category classification and D1 integration
+        run: node --test tests/crm-device.test.mjs
+
+      - name: Test CRM CSV export and deletion
+        run: node --test tests/crm-records.test.mjs
+
+      - name: Test lead form hints, validation and warning UX
+        run: node --experimental-strip-types --test tests/lead-form-validation.test.mjs
+
+      - name: Test smart mobile CTA visibility
+        run: node --experimental-strip-types --test tests/sticky-cta.test.mjs
+
+      - name: Test cookie UI regression safeguards
+        run: node --test tests/cookie-controls.test.mjs
+
+      - name: Test CMS content
+        run: node --test tests/content-config.test.mjs
