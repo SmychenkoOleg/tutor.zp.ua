@@ -299,7 +299,13 @@ export default function Home() {
               <details key={faq.question}><summary>{faq.question}<span>+</span></summary><p>{faq.answer}</p></details>
             ))}
           </div>
-          <div className="center-cta"><button data-form-cta className="button button-dark" onClick={() => openForm("faq")}>Поставити своє запитання <span>→</span></button></div>
+          <div className="faq-follow-up">
+            <h3>{content.faq.ctaHeading}</h3>
+            <p>{content.faq.ctaDescription}</p>
+            <button data-form-cta className="button button-dark" onClick={() => openForm("faq")}>
+              {content.faq.ctaButton} <span>→</span>
+            </button>
+          </div>
         </section>
       </main>
 
